@@ -292,7 +292,8 @@ void lc_insert(MachO &macho, uint32_t arch) {
 	static uint32_t insertable_cmds[] = {
 		LC_LOAD_DYLIB,
 		LC_LOAD_WEAK_DYLIB,
-		LC_RPATH
+		LC_RPATH,
+        0x32
 	};
 
 	std::vector<std::string> options;
@@ -334,15 +335,21 @@ void lc_insert(MachO &macho, uint32_t arch) {
 		}
 		case LC_RPATH: {
 			uint32_t cmdsize;
-			if((lc = get_path_cmd("Runpath:", sizeof(dylib_command), &cmdsize))) {
-				auto *c = (rpath_command *)lc;
-				c->cmd = SWAP32(cmd, magic);
-				c->cmdsize = SWAP32(cmdsize, magic);
-				c->path.offset = SWAP32(sizeof(dylib_command), magic);
-			}
-
-			break;
-		}
+            if((lc = get_path_cmd("Runpath:", sizeof(dylib_command), &cmdsize))) {
+                auto *c = (rpath_command *)lc;
+                c->cmd = SWAP32(cmd, magic);
+                c->cmdsize = SWAP32(cmdsize, magic);
+                c->path.offset = SWAP32(sizeof(dylib_command), magic);
+            }
+            
+            break;
+        }
+        case 0x32: {
+            char command[32] = {50,0,0,0,32,0,0,0,6,0,0,0,0,0,13,0,0,0,13,0,1,0,0,0,3,0,0,0,0,4,0,2};
+            lc = (load_command *) malloc(32);
+            memcpy(lc, command, 32);
+            break;
+        }
 	}
 
 	if(lc) {
