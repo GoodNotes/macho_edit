@@ -1,3 +1,11 @@
+On insert of Catalyst load command.
+
+Catalyst is a special platform, but relies and is fully compatible with macos binaries.
+The difference between a catalist macho file and macos file is in 1 macho load-command. 
+I have no idea what this command does. When it's added to mac dylib, XCode will happily accept the binary and treat it like it's for Catalyst platform.
+The fork adds feature to insert this load-command into existing dylib.
+
+
 macho_edit
 ==========
 
